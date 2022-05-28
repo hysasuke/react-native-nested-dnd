@@ -53,7 +53,7 @@ const sampleData = [
   },
   {
     title: 'Group3',
-    items: [{title: 'Item6'}],
+    items: [],
   },
   {
     title: 'Group4',
@@ -99,6 +99,13 @@ const NestedDNDTest = () => {
         renderBottomView={renderHeader()}
         headerViewHeight={headerHeight}
         bottomViewHeight={headerHeight}
+        renderEmptyItem={() => {
+          return (
+            <View style={{backgroundColor: 'green', height: 100}}>
+              <Text>empty view</Text>
+            </View>
+          );
+        }}
       />
     </SafeAreaView>
   );

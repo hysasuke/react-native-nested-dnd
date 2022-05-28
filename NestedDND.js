@@ -116,14 +116,18 @@ class NestedDND extends React.PureComponent {
         count: groupItems.length + 1,
       };
       nextItems.push(groupData);
-      groupItems.forEach(groupItem => {
-        const itemKey = itemKeyExtractor(groupItem);
-        nextItems.push({key: `i-${itemKey}`, data: groupItem});
-      });
+      if (groupItems.length > 0) {
+        groupItems.forEach(groupItem => {
+          const itemKey = itemKeyExtractor(groupItem);
+          nextItems.push({key: `i-${itemKey}`, data: groupItem});
+        });
+      } else {
+        nextItems.push({key: 'i-empty', data: null});
+      }
     });
     const fixedItemKeys = [];
     nextItems.forEach(item => {
-      if (item.data.isFixed) {
+      if (item.data && item.data.isFixed) {
         fixedItemKeys.push(item.key);
       }
     });
@@ -202,10 +206,16 @@ class NestedDND extends React.PureComponent {
     const {renderItem, renderGroupHeader, onGroupHeaderPress, onItemPress} =
       this.props;
     let children;
+    let touchableProps = {};
     if (renderProps.isGroup) {
       children = renderGroupHeader(renderProps.data);
-    } else {
+    } else if (renderProps.data) {
       children = renderItem(renderProps.data);
+      touchableProps = renderProps.data.touchableProps;
+    } else if (!renderProps.data) {
+      if (this.props.renderEmptyItem) {
+        children = this.props.renderEmptyItem();
+      }
     }
     return (
       <TouchableOpacity
@@ -219,7 +229,7 @@ class NestedDND extends React.PureComponent {
           onPress && onPress(renderProps.data);
         }}
         onPressOut={() => this.dragSortableRef.current.onPressOut()}
-        {...renderProps.data.touchableProps}>
+        {...touchableProps}>
         {children}
       </TouchableOpacity>
     );
